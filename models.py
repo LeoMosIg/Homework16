@@ -1,5 +1,7 @@
 from app import *
 
+"""Модель базы данных"""
+
 
 class User(db.Model):
     __tablename__ = "user"

@@ -1,5 +1,9 @@
 import datetime
 
+"""Создание БД"""
+
+
+from app import *
 from models import *
 from config import *
 
@@ -18,6 +22,7 @@ with app.app_context():
             phone=user['phone']
         ))
         db.session.commit()
+        db.session.close()
 
     for order in orders:
         month_start, day_start, years_start = order['start_date'].split("/")
@@ -35,6 +40,7 @@ with app.app_context():
             executor_id=order['executor_id']
         ))
         db.session.commit()
+        db.session.close()
 
     for offer in offers:
         db.session.add(Offer(
@@ -43,3 +49,4 @@ with app.app_context():
             executor_id=offer['executor_id']
         ))
         db.session.commit()
+        db.session.close()
