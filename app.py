@@ -87,7 +87,6 @@ def orders():
             month_start, day_start, years_start = new_order['start_date'].split("/")
             month_end, day_end, years_end = new_order['end_date'].split("/")
             new_order_obj = Order(
-                id=new_order['id'],
                 name=new_order['name'],
                 description=new_order['description'],
                 start_date=datetime.date(month=int(month_start), day=int(day_start), year=int(years_start)),
@@ -102,7 +101,7 @@ def orders():
             db.session.close()
             return "Заказ создан в базе данных", 200
         except Exception as error:
-            return error
+            return repr(error), 500
 
 
 @app.route('/orders/<int:order_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -114,24 +113,22 @@ def one_order(order_id):
         else:
             return jsonify(order.to_dict())
 
-    # Метод PUT для Orders, так и не смог запустить
-
     elif request.method == 'PUT':
         order_data = json.loads(request.data)
         order = db.session.query(Order).get(order_id)
         if order is None:
             return "Заказ не найден", 404
 
-        month_start, day_start, years_start = [int(order_date) for order_date in order['start_date'].split("/")]
-        month_end, day_end, years_end = [int(order_date) for order_date in order['end_date'].split("/")]
+        month_start, day_start, years_start = [int(order_date) for order_date in order_data['start_date'].split("/")]
+        month_end, day_end, years_end = [int(order_date) for order_date in order_data['end_date'].split("/")]
 
-        order.name = order_data['name'],
-        order.description = order_data['description'],
-        order.start_date = datetime.date(month=month_start, day=day_start, year=years_start),
-        order.end_date = datetime.date(month=month_end, day=day_end, year=years_end),
-        order.address = order_data['address'],
-        order.price = order_data['price'],
-        order.customer_id = order_data['customer_id'],
+        order.name = order_data['name']
+        order.description = order_data['description']
+        order.start_date = datetime.date(month=month_start, day=day_start, year=years_start)
+        order.end_date = datetime.date(month=month_end, day=day_end, year=years_end)
+        order.address = order_data['address']
+        order.price = order_data['price']
+        order.customer_id = order_data['customer_id']
         order.executor_id = order_data['executor_id']
         db.session.add(order)
         db.session.commit()
